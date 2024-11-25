@@ -1,4 +1,5 @@
 import mysql.connector
+from tkinter import messagebox
 
 def conexao_banco():
     try:
@@ -52,6 +53,17 @@ def cadastra_livro(isbn,titulo, autor, ano_publicacao, id_categoria):
         cursor.execute(query, (isbn,titulo, autor, ano_publicacao, id_categoria))
         
         conexao.commit()
-
+        
+        messagebox.showwarning("Sucesso", "Produto cadastrado com sucesso")
     except:
-        print("Não consegui inserir o registro!")
+        messagebox.showerror("Erro", "Não foi possível cadastrar")
+
+
+def excluir_produto(produto_id):
+    try:
+        conexao = conexao_banco()
+        cursor = conexao.cursor()
+        query = "DELETE FROM livro WHERE isbn = %s"
+        cursor.execute(query,(produto_id))
+    except:
+        messagebox.showerror("Error","Não foi possível excluir o produto")

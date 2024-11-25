@@ -1,7 +1,7 @@
 import tkinter as tk
 import database as db
-from tkinter import ttk
-
+from tkinter import ttk, messagebox
+from PIL import Image, ImageTk
 
 def listagemLivros():
     novaJanela = tk.Toplevel()
@@ -38,17 +38,36 @@ def listagemLivros():
         for registro in registros:
             tabelaProdutos.insert("",tk.END,values=registro)
 
-    # btnFechar = tk.Button(novaJanela, text="fechar", command=novaJanela.destroy)
-    # btnFechar.pack(pady=10)
+    def excluir_registro():
+        selected_item = tabelaProdutos.selection()
+
+        if selected_item:
+            item = tabelaProdutos.item(selected_item)
+
+            produto_id = item["values"][0]
+            
+            db.excluir_produto(produto_id)
 
 
+    icon_delete_image = Image.open("assets/delete.jpg").resize((16, 16))
+    icon = ImageTk.PhotoImage(icon_delete_image)
 
-
-
-
-
+    btn_delete = tk.Button(novaJanela, image=icon, command=lambda:excluir_registro)
+    btn_delete.pack(pady=10)
 
 def abrir_janela_cadastra_produto():
+
+    def limpa_campos():
+        input_isbn.delete(0,tk.END)
+        input_titulo.delete(0,tk.END)
+        input_autor.delete(0,tk.END)
+        input_ano_publicacao.delete(0,tk.END)
+        input_id_categoria.delete(0,tk.END)
+
+    def salva_livro():
+        db.cadastra_livro(input_isbn.get(), input_titulo.get(), input_autor.get(), input_ano_publicacao.get(), input_id_categoria.get())
+
+
     nova_janela = tk.Toplevel()
     nova_janela.title("Cadastro de Produtos")
     nova_janela.geometry("400x600")
@@ -73,12 +92,8 @@ def abrir_janela_cadastra_produto():
     input_id_categoria = tk.Entry(nova_janela)
     input_id_categoria.pack(pady=10)
 
-    btn_cadastra_produto = tk.Button(nova_janela, text="Cadastrar", command=lambda:db.cadastra_livro(input_isbn.get(), input_titulo.get(), input_autor.get(), input_ano_publicacao.get(), input_id_categoria.get()))
+    btn_cadastra_produto = tk.Button(nova_janela, text="Cadastrar", command=lambda:db.cadastra_livro(salva_livro()))
     btn_cadastra_produto.pack(pady=10)
-
-
-
-
 
 def telaPrincipal():
     root = tk.Tk()
